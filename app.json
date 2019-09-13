@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "In Time",
+    "slug": "in-time",
+    "description": "Metronome + beat tapper",
+    "githubUrl": "https://github.com/gretzky/in-time",
+    "primaryColor": "#3EA6EF",
+    "privacy": "public",
+    "sdkVersion": "34.0.0",
+    "platforms": ["ios", "android", "web"],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/icon.png",
+    "splash": {
+      "image": "./src/assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#000"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gretzky.beats"
+    },
+    "android": {
+      "package": "com.gretzky.beats"
+    }
+  }
+}
