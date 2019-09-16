@@ -18,7 +18,7 @@ const useAudio = (isMetronome: boolean) => {
   /**
    * loadStrongBeat - load the strong beat mp3
    */
-  const loadStrongBeat = async () => {
+  const loadStrongBeat = async (): Promise<void> => {
     try {
       const { sound } = await Audio.Sound.createAsync(
         require("../assets/hi.mp3")
@@ -32,7 +32,7 @@ const useAudio = (isMetronome: boolean) => {
   /**
    * loadWeakBeat - load the weak beat mp3
    */
-  const loadWeakBeat = async () => {
+  const loadWeakBeat = async (): Promise<void> => {
     try {
       const { sound } = await Audio.Sound.createAsync(
         require("../assets/low.mp3")
@@ -46,58 +46,68 @@ const useAudio = (isMetronome: boolean) => {
   /**
    * handleChangeTimeSignature - debounced helper to change the beats per measure after 500 millis (to avoid abruptly changing the metronome if playing)
    */
-  const handleChangeTimeSignature = debounce(newTimeSignature => {
+  const handleChangeTimeSignature = debounce((newTimeSignature: number) => {
     if (newTimeSignature && !isNaN(newTimeSignature)) {
-      setTimeSignature(parseInt(newTimeSignature, 10));
+      setTimeSignature(parseInt(newTimeSignature.toString(), 10));
     } else {
       setTimeSignature(4);
     }
   }, 500);
 
+  // get the first (strong) beat if the remainder of beats in the measure is 0
+  const firstBeat: boolean = beatCount % timeSignature === 0;
+
   /**
    * handleBeat - helper that handles playing the correct beat/haptic based on audible settings and whether or not we're on the first beat
    */
-  const handleBeat = () => {
-    if (beatCount % timeSignature === 0) {
-      // these if/elses for each audible isn't ideal
-      // but because both the sound and haptic are loaded async
-      // we need to be explicit about when/where these are handled
-      if (audible === Audible.SOUND) {
-        strongBeat.replayAsync();
-      } else if (audible === Audible.HAPTIC) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      } else if (audible === Audible.BOTH) {
-        strongBeat.replayAsync();
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      }
-    } else {
-      if (audible === Audible.SOUND) {
-        weakBeat.replayAsync();
-      } else if (audible === Audible.HAPTIC) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      } else if (audible === Audible.BOTH) {
-        weakBeat.replayAsync();
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      }
+  const handleBeat = (): void => {
+    switch (audible) {
+      case Audible.SOUND:
+        firstBeat ? strongBeat.replayAsync() : weakBeat.replayAsync();
+        break;
+      case Audible.HAPTIC:
+        firstBeat
+          ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+          : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        break;
+      case Audible.BOTH:
+        firstBeat ? strongBeat.replayAsync() : weakBeat.replayAsync();
+        firstBeat
+          ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+          : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        break;
+      default:
+        return;
     }
 
-    // increment the beat counter
+    // increment the beat in the measure
     setBeatCount((beatCount + 1) % timeSignature);
   };
 
   /**
    * handleAudible - set audible count number based on which screen we're in
    */
-  const handleAudible = () => {
+  const handleAudibleCount = (): void => {
     // we have 4 audible options, so reset the counter when we've hit 4
-    const num = isMetronome ? 3 : 4;
-    setAudibleCount(audibleCount === num ? 1 : audibleCount + 1);
+    const numOptions: number = isMetronome ? 3 : 4;
+    setAudibleCount(audibleCount === numOptions ? 1 : audibleCount + 1);
   };
 
-  useEffect(() => {
+  /**
+   * handleAudibleEffects - set audible type and icon based on the current audible state
+   */
+  const handleAudibleEffects = (audible: Audible, icon?: string): void => {
+    setAudible(audible);
+
+    if (icon) {
+      setAudibleIcon(icon);
+    }
+  };
+
+  useEffect((): void => {
     Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
-      staysActiveInBackground: true,
+      staysActiveInBackground: true, // not sure how this actually works
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
@@ -108,21 +118,22 @@ const useAudio = (isMetronome: boolean) => {
     loadWeakBeat();
   }, []);
 
-  useEffect(() => {
-    if (!isMetronome) {
-      if (audibleCount === 4) {
-        setAudible(Audible.NONE);
-        setAudibleIcon("volume-mute");
-      }
-    }
-    if (audibleCount === 1) {
-      setAudible(Audible.HAPTIC);
-      setAudibleIcon("vibrate");
-    } else if (audibleCount === 2) {
-      setAudible(Audible.SOUND);
-      setAudibleIcon("music");
-    } else if (audibleCount === 3) {
-      setAudible(Audible.BOTH);
+  useEffect((): void => {
+    switch (audibleCount) {
+      case 1:
+        handleAudibleEffects(Audible.HAPTIC, "vibrate");
+        break;
+      case 2:
+        handleAudibleEffects(Audible.SOUND, "music");
+        break;
+      case 3:
+        handleAudibleEffects(Audible.BOTH);
+        break;
+      case 4:
+        handleAudibleEffects(Audible.NONE, "volume-mute");
+        break;
+      default:
+        return;
     }
   }, [audibleCount]);
 
@@ -132,7 +143,7 @@ const useAudio = (isMetronome: boolean) => {
     timeSignature,
     setTimeSignature: handleChangeTimeSignature,
     handleBeat,
-    handleAudible,
+    handleAudible: handleAudibleCount,
     audibleIcon,
     audible
   };
