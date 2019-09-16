@@ -7,7 +7,7 @@ const initialState: SettingsState = {
   bpm: 100,
   metronomeAudible: Audible.SOUND,
   counterAudible: Audible.HAPTIC,
-  theme: "dark"
+  theme: "light"
 };
 
 const rootReducer: Reducer<SettingsState, AnyAction> = (

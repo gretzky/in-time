@@ -5,7 +5,7 @@ import Icon from "./Icon";
 import { Audible } from "../types";
 import theme from "../styles/theme";
 
-const SettingsWrapper = styled.View`
+const ToolbarWrapper = styled.View`
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -24,7 +24,7 @@ const InnerWrapper = styled.View`
   flex-direction: row;
 `;
 
-interface SettingsProps {
+interface ToolbarProps {
   onBeatsPerMeasureChange: () => void;
   beatsPerMeasure: number;
   onAudibleChange: () => void;
@@ -36,7 +36,7 @@ interface SettingsProps {
   isPlaying?: boolean;
 }
 
-const Settings: React.FC<SettingsProps> = ({
+const Toolbar: React.FC<ToolbarProps> = ({
   onBeatsPerMeasureChange,
   beatsPerMeasure,
   onAudibleChange,
@@ -48,7 +48,7 @@ const Settings: React.FC<SettingsProps> = ({
   isPlaying
 }) => {
   return (
-    <SettingsWrapper>
+    <ToolbarWrapper>
       {showReset ? (
         <Button onPress={onReset} icon="refresh" />
       ) : (
@@ -67,8 +67,8 @@ const Settings: React.FC<SettingsProps> = ({
       <Button onPress={onBeatsPerMeasureChange}>
         <ButtonText>{beatsPerMeasure}/4</ButtonText>
       </Button>
-    </SettingsWrapper>
+    </ToolbarWrapper>
   );
 };
 
-export default Settings;
+export default Toolbar;

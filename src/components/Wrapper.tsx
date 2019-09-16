@@ -1,6 +1,7 @@
 import styled from "styled-components/native";
+import { ThemeProps } from "../styles/theme";
 
-const Wrapper = styled.SafeAreaView`
+const Wrapper = styled.SafeAreaView<ThemeProps>`
   display: flex;
   flex-direction: column;
   width: 100%;

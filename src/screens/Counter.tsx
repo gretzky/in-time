@@ -3,7 +3,7 @@ import { View, Text, TouchableWithoutFeedback } from "react-native";
 import { useSelector } from "react-redux";
 import useBeatTapper from "../hooks/useBeatTapper";
 import Count from "../components/Count";
-import Settings from "../components/Settings";
+import Toolbar from "../components/Toolbar";
 import Wrapper from "../components/Wrapper";
 
 const Counter = () => {
@@ -27,7 +27,7 @@ const Counter = () => {
   return (
     <TouchableWithoutFeedback onPress={handleTap}>
       <Wrapper theme={theme}>
-        <Settings
+        <Toolbar
           onBeatsPerMeasureChange={handleBeatsPerMeasure}
           beatsPerMeasure={beatsPerMeasure}
           onAudibleChange={handleAudible}

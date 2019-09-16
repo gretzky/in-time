@@ -16,4 +16,8 @@ const theme: Theme = {
   }
 };
 
+export interface ThemeProps {
+  theme: "light" | "dark";
+}
+
 export default theme;

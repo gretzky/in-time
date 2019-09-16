@@ -158,7 +158,9 @@ const useAudio = () => {
     handleBeat,
     handleAudible: handleAudibleCount,
     audibleIcon,
-    audible
+    audible,
+    setAudible,
+    audibleCount
   };
 };
 

@@ -1,11 +1,10 @@
 import * as React from "react";
-import { Text, View, TextInput, Button } from "react-native";
+import { Text, View, TextInput } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import useMetronome from "../hooks/useMetronome";
 import Wrapper from "../components/Wrapper";
 import Indicator from "../components/Indicator";
-import Settings from "../components/Settings";
-import { setTheme } from "../redux/actions";
+import Toolbar from "../components/Toolbar";
 
 const Metronome = () => {
   const {
@@ -28,7 +27,7 @@ const Metronome = () => {
 
   return (
     <Wrapper theme={theme}>
-      <Settings
+      <Toolbar
         onBeatsPerMeasureChange={handleBeatsPerMeasure}
         beatsPerMeasure={beatsPerMeasure}
         onAudibleChange={handleAudible}
