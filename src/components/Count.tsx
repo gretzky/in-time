@@ -4,12 +4,14 @@ import styled from "styled-components";
 const CountLabel = styled.Text`
   font-size: 24px;
   font-weight: bold;
+  color: ${props => (props.theme === "dark" ? "#fff" : "#000")};
 `;
 
 const CountDisplay = styled.Text`
   font-size: 100px;
   font-weight: bold;
   margin: 0;
+  color: ${props => (props.theme === "dark" ? "#fff" : "#000")};
 `;
 
 const CountWrapper = styled.View`
@@ -22,12 +24,13 @@ const CountWrapper = styled.View`
 interface CountProps {
   label: string;
   count: number;
+  theme: "light" | "dark";
 }
 
-const Count: React.FC<CountProps> = ({ label, count }) => (
+const Count: React.FC<CountProps> = ({ label, count, theme }) => (
   <CountWrapper>
-    <CountDisplay>{count}</CountDisplay>
-    <CountLabel>{label}</CountLabel>
+    <CountDisplay theme={theme}>{count}</CountDisplay>
+    <CountLabel theme={theme}>{label}</CountLabel>
   </CountWrapper>
 );
 

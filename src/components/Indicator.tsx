@@ -24,14 +24,17 @@ const Button = styled.View`
 
 interface IndicatorProps {
   beatCount: number;
-  timeSignature: number;
+  beatsPerMeasure: number;
 }
 
-const Indicator = ({ beatCount, timeSignature }) => (
+const Indicator: React.FC<IndicatorProps> = ({
+  beatCount,
+  beatsPerMeasure
+}) => (
   <Wrapper>
     <Button active={beatCount === 1} />
     <Button active={beatCount === 2} />
-    {timeSignature === 4 ? <Button active={beatCount === 3} /> : null}
+    {beatsPerMeasure === 4 ? <Button active={beatCount === 3} /> : null}
     <Button active={beatCount === 0} />
   </Wrapper>
 );

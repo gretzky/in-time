@@ -8,6 +8,7 @@ const Wrapper = styled.SafeAreaView`
   justify-content: space-around;
   align-items: center;
   margin: 0 auto;
+  background-color: ${props => (props.theme === "dark" ? "#000" : "#fff")};
 `;
 
 export default Wrapper;

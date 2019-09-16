@@ -11,11 +11,7 @@ const NavigatorTabs = createMaterialTopTabNavigator(
   {
     initialRouteName: "Metronome",
     animationEnabled: true,
-    tabBarComponent: () => null,
-    style: {
-      paddingTop: 40,
-      backgroundColor: "#fff"
-    }
+    tabBarComponent: () => null
   }
 );
 

@@ -14,9 +14,8 @@ const useBeatTapper = () => {
     audible,
     audibleIcon,
     handleAudible,
-    timeSignature,
-    setTimeSignature
-  } = useAudio(false);
+    setBeatsPerMeasure
+  } = useAudio();
 
   /**
    * handleReset - reset all counters
@@ -49,15 +48,14 @@ const useBeatTapper = () => {
   };
 
   // tap handler
-  useEffect(() => Linking.addEventListener("keyup", () => handleTap()));
+  useEffect((): void => Linking.addEventListener("keyup", () => handleTap()));
 
   return {
     tapBpm: bpm,
     handleTap,
     handleReset,
     tapCount: count,
-    timeSignature,
-    setTimeSignature,
+    setBeatsPerMeasure,
     audible,
     handleAudible,
     audibleIcon

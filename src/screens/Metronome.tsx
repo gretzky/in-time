@@ -1,31 +1,36 @@
 import * as React from "react";
-import { Text, View, TextInput } from "react-native";
+import { Text, View, TextInput, Button } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 import useMetronome from "../hooks/useMetronome";
 import Wrapper from "../components/Wrapper";
 import Indicator from "../components/Indicator";
 import Settings from "../components/Settings";
+import { setTheme } from "../redux/actions";
 
 const Metronome = () => {
   const {
     setIsPlaying,
     isPlaying,
     setBpm,
-    timeSignature,
-    setTimeSignature,
+    setBeatsPerMeasure,
     beatCount,
     handleAudible,
     audible,
     audibleIcon
   } = useMetronome();
 
-  const handleTimeSignature = () =>
-    timeSignature === 4 ? setTimeSignature(3) : setTimeSignature(4);
+  const dispatch = useDispatch();
+  const theme = useSelector(state => state.theme);
+  const beatsPerMeasure = useSelector(state => state.beatsPerMeasure);
+
+  const handleBeatsPerMeasure = (): void =>
+    beatsPerMeasure === 4 ? setBeatsPerMeasure(3) : setBeatsPerMeasure(4);
 
   return (
-    <Wrapper>
+    <Wrapper theme={theme}>
       <Settings
-        onTimeSignatureChange={handleTimeSignature}
-        timeSignature={timeSignature}
+        onBeatsPerMeasureChange={handleBeatsPerMeasure}
+        beatsPerMeasure={beatsPerMeasure}
         onAudibleChange={handleAudible}
         audible={audible}
         audibleIcon={audibleIcon}
@@ -42,15 +47,26 @@ const Metronome = () => {
         }}
       >
         <TextInput
-          style={{ fontSize: 120, fontWeight: "bold" }}
+          style={{
+            fontSize: 120,
+            fontWeight: "bold",
+            color: theme === "dark" ? "#fff" : "#000"
+          }}
           keyboardType="number-pad"
           returnKeyType="done"
           defaultValue="100"
           onChangeText={(beat: any) => setBpm(beat)}
         />
-        <Text style={{ fontStyle: "italic" }}>Tap to change</Text>
+        <Text
+          style={{
+            fontStyle: "italic",
+            color: theme === "dark" ? "#fff" : "#000"
+          }}
+        >
+          Tap to change
+        </Text>
       </View>
-      <Indicator beatCount={beatCount} timeSignature={timeSignature} />
+      <Indicator beatCount={beatCount} beatsPerMeasure={beatsPerMeasure} />
     </Wrapper>
   );
 };

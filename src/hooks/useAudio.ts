@@ -1,19 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { NavigationContext } from "react-navigation";
+import { useSelector, useDispatch } from "react-redux";
 import { Audio } from "expo-av";
 import * as Haptics from "expo-haptics";
 import debounce from "lodash.debounce";
 import { Audible } from "../types";
+import { setBeatsPerMeasure } from "../redux/actions";
 
-const useAudio = (isMetronome: boolean) => {
-  const [timeSignature, setTimeSignature] = useState<number>(4);
+const useAudio = () => {
+  const dispatch = useDispatch();
+
+  const beatsPerMeasure = useSelector(state => state.beatsPerMeasure);
+  const metronomeAudible = useSelector(state => state.metronomeAudible);
+  const counterAudible = useSelector(state => state.counterAudible);
+
+  const navigation = useContext(NavigationContext);
+
+  // some settings are screen-specific
+  const isMetronome = navigation.state.routeName === "Metronome";
+
+  //const [beatsPerMeasure, setBeatsPerMeasure] = useState(4);
   const [strongBeat, setStrongBeat] = useState<any>(null);
   const [weakBeat, setWeakBeat] = useState<any>(null);
   const [audible, setAudible] = useState<Audible>(
-    isMetronome ? Audible.SOUND : Audible.HAPTIC
+    isMetronome ? metronomeAudible : counterAudible
   );
   const [audibleCount, setAudibleCount] = useState<number>(isMetronome ? 2 : 1);
   const [audibleIcon, setAudibleIcon] = useState<string>("null");
   const [beatCount, setBeatCount] = useState<number>(0);
+
+  // get the first (strong) beat if the remainder of beats in the measure is 0
+  const firstBeat: boolean = beatCount % beatsPerMeasure === 0;
 
   /**
    * loadStrongBeat - load the strong beat mp3
@@ -44,18 +61,15 @@ const useAudio = (isMetronome: boolean) => {
   };
 
   /**
-   * handleChangeTimeSignature - debounced helper to change the beats per measure after 500 millis (to avoid abruptly changing the metronome if playing)
+   * handleChangeBeatsPerMeasure - debounced helper to change the beats per measure after 500 millis (to avoid abruptly changing the metronome if playing)
    */
-  const handleChangeTimeSignature = debounce((newTimeSignature: number) => {
-    if (newTimeSignature && !isNaN(newTimeSignature)) {
-      setTimeSignature(parseInt(newTimeSignature.toString(), 10));
+  const handleChangeBeatsPerMeasure = debounce((newBeatsPerMeasure: number) => {
+    if (newBeatsPerMeasure && !isNaN(newBeatsPerMeasure)) {
+      dispatch(setBeatsPerMeasure(parseInt(newBeatsPerMeasure.toString(), 10)));
     } else {
-      setTimeSignature(4);
+      dispatch(setBeatsPerMeasure(4));
     }
   }, 500);
-
-  // get the first (strong) beat if the remainder of beats in the measure is 0
-  const firstBeat: boolean = beatCount % timeSignature === 0;
 
   /**
    * handleBeat - helper that handles playing the correct beat/haptic based on audible settings and whether or not we're on the first beat
@@ -81,7 +95,7 @@ const useAudio = (isMetronome: boolean) => {
     }
 
     // increment the beat in the measure
-    setBeatCount((beatCount + 1) % timeSignature);
+    setBeatCount((beatCount + 1) % beatsPerMeasure);
   };
 
   /**
@@ -140,8 +154,7 @@ const useAudio = (isMetronome: boolean) => {
   return {
     beatCount,
     setBeatCount,
-    timeSignature,
-    setTimeSignature: handleChangeTimeSignature,
+    setBeatsPerMeasure: handleChangeBeatsPerMeasure,
     handleBeat,
     handleAudible: handleAudibleCount,
     audibleIcon,

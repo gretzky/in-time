@@ -1,5 +1,6 @@
 import * as React from "react";
 import { View, Text, TouchableWithoutFeedback } from "react-native";
+import { useSelector } from "react-redux";
 import useBeatTapper from "../hooks/useBeatTapper";
 import Count from "../components/Count";
 import Settings from "../components/Settings";
@@ -11,21 +12,24 @@ const Counter = () => {
     handleReset,
     handleTap,
     tapBpm,
-    timeSignature,
-    setTimeSignature,
+    setBeatsPerMeasure,
     audible,
     audibleIcon,
     handleAudible
   } = useBeatTapper();
-  const handleTimeSignature = () =>
-    timeSignature === 4 ? setTimeSignature(3) : setTimeSignature(4);
+
+  const theme = useSelector(state => state.theme);
+  const beatsPerMeasure = useSelector(state => state.beatsPerMeasure);
+
+  const handleBeatsPerMeasure = () =>
+    beatsPerMeasure === 4 ? setBeatsPerMeasure(3) : setBeatsPerMeasure(4);
 
   return (
     <TouchableWithoutFeedback onPress={handleTap}>
-      <Wrapper>
+      <Wrapper theme={theme}>
         <Settings
-          onTimeSignatureChange={handleTimeSignature}
-          timeSignature={timeSignature}
+          onBeatsPerMeasureChange={handleBeatsPerMeasure}
+          beatsPerMeasure={beatsPerMeasure}
           onAudibleChange={handleAudible}
           audible={audible}
           audibleIcon={audibleIcon}
@@ -40,11 +44,18 @@ const Counter = () => {
             width: "100%"
           }}
         >
-          <Count count={tapCount} label="Count" />
+          <Count count={tapCount} label="Count" theme={theme} />
           <View style={{ marginTop: 20, marginBottom: 20 }} />
-          <Count count={tapBpm} label="BPM" />
+          <Count count={tapBpm} label="BPM" theme={theme} />
         </View>
-        <Text style={{ fontWeight: "bold" }}>Tap anywhere on the screen</Text>
+        <Text
+          style={{
+            fontWeight: "bold",
+            color: theme === "dark" ? "#fff" : "#000"
+          }}
+        >
+          Tap anywhere on the screen
+        </Text>
       </Wrapper>
     </TouchableWithoutFeedback>
   );

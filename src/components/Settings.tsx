@@ -1,10 +1,9 @@
 import * as React from "react";
 import styled from "styled-components/native";
-import AudibleButton from "./AudibleButton";
-import TimeSignatureButton from "./TimeSignatureButton";
-import ResetButton from "./ResetButton";
-import PlayPauseButton from "./PlayPauseButton";
+import Button from "./Button";
+import Icon from "./Icon";
 import { Audible } from "../types";
+import theme from "../styles/theme";
 
 const SettingsWrapper = styled.View`
   display: flex;
@@ -14,9 +13,20 @@ const SettingsWrapper = styled.View`
   align-items: center;
 `;
 
+const ButtonText = styled.Text`
+  color: ${theme.colors.white};
+  font-size: 24px;
+  font-weight: bold;
+`;
+
+const InnerWrapper = styled.View`
+  display: flex;
+  flex-direction: row;
+`;
+
 interface SettingsProps {
-  onTimeSignatureChange: () => void;
-  timeSignature: number;
+  onBeatsPerMeasureChange: () => void;
+  beatsPerMeasure: number;
   onAudibleChange: () => void;
   audible: Audible;
   audibleIcon: string;
@@ -27,8 +37,8 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({
-  onTimeSignatureChange,
-  timeSignature,
+  onBeatsPerMeasureChange,
+  beatsPerMeasure,
   onAudibleChange,
   audible,
   audibleIcon,
@@ -40,19 +50,23 @@ const Settings: React.FC<SettingsProps> = ({
   return (
     <SettingsWrapper>
       {showReset ? (
-        <ResetButton onReset={onReset} />
+        <Button onPress={onReset} icon="refresh" />
       ) : (
-        <PlayPauseButton onPress={onPlayPause} isPlaying={isPlaying} />
+        <Button onPress={onPlayPause} icon={isPlaying ? "pause" : "play"} />
       )}
-      <AudibleButton
-        onAudibleChange={onAudibleChange}
-        audible={audible}
-        audibleIcon={audibleIcon}
-      />
-      <TimeSignatureButton
-        onPress={onTimeSignatureChange}
-        timeSignature={timeSignature}
-      />
+      <Button onPress={onAudibleChange}>
+        {audible === Audible.BOTH ? (
+          <InnerWrapper>
+            <Icon name="music" />
+            <Icon name="vibrate" />
+          </InnerWrapper>
+        ) : (
+          <Icon name={audibleIcon} />
+        )}
+      </Button>
+      <Button onPress={onBeatsPerMeasureChange}>
+        <ButtonText>{beatsPerMeasure}/4</ButtonText>
+      </Button>
     </SettingsWrapper>
   );
 };

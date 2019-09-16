@@ -9,27 +9,26 @@ const useMetronome = () => {
     handleAudible,
     audibleIcon,
     handleBeat,
-    timeSignature,
-    setTimeSignature,
+    setBeatsPerMeasure,
     beatCount
-  } = useAudio(true);
+  } = useAudio();
 
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [bpm, setBpm] = useState<number>(100);
 
+  // convert bpm to millis
+  const delay: number = (60 / Math.floor(bpm)) * 1000;
+
   /**
-   * handleChangeTimeSignature - debounced helper to change the bpm after 500 millis (to avoid abruptly changing the metronome if playing)
+   * handleChangeBeatsPerMeasure - debounced helper to change the bpm after 500 millis (to avoid abruptly changing the metronome if playing)
    */
-  const handleChangeBpm = debounce(newBpm => {
+  const handleChangeBpm = debounce((newBpm: number) => {
     if (newBpm && !isNaN(newBpm)) {
-      setBpm(parseInt(newBpm, 10));
+      setBpm(parseInt(newBpm.toString(), 10));
     } else {
       setBpm(100);
     }
   }, 500);
-
-  // convert bpm to millis
-  const delay = (60 / Math.floor(bpm)) * 1000;
 
   // play the metronome sounds/haptics every designated bpm
   useInterval(
@@ -46,8 +45,7 @@ const useMetronome = () => {
     setIsPlaying,
     bpm,
     setBpm: handleChangeBpm,
-    timeSignature,
-    setTimeSignature,
+    setBeatsPerMeasure,
     beatCount,
     audible,
     handleAudible,
